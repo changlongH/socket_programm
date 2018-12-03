@@ -25,7 +25,6 @@ int StartBlockSocket()
     socket_desc = socket(AF_INET, SOCK_STREAM, 0);
     if (socket_desc == -1){
         perror("create socket error");
-        //exit(EXIT_FAILURE);
         return -1;
     }
 
@@ -53,7 +52,7 @@ int StartBlockSocket()
     // Accept
     client_sock = accept(socket_desc, (struct sockaddr*)&client, (socklen_t*)&client_len);
     if (client_sock < 0){
-        perror("listen socket error");
+        perror("accpt client error");
         return -1;
     }
 
@@ -61,15 +60,17 @@ int StartBlockSocket()
     inet_ntop(AF_INET, &(client.sin_addr), str, INET_ADDRSTRLEN);
     printf("connection accepted. ip=%s\n", str);
 
+    // send msg to client
     char buff[1024] = "hello client. I am server.";
     write(client_sock, buff, 30);
     memset(&buff, 0, sizeof(buff));
 
+    // recv client msg until close
     while(read_size = recv(client_sock, buff, 1024, 0) > 0){
         printf("recv client msg=%s\n", buff);
     }
 
-    printf("disconnected...");
+    printf("client disconnect...\n");
     close(client_sock);
 
     return 0;
@@ -80,5 +81,4 @@ int main()
     StartBlockSocket();
     return 0;
 }
-
 
