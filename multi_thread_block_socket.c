@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <netinet/tcp.h> 
 #include <netinet/in.h>
 #include <sys/types.h>          /* See NOTES */
 #include <sys/socket.h>
@@ -19,16 +20,17 @@ void* server_handler(void* pfd)
         memset(&client_message, 0, 1024);
     }
 
-    if (read_size < 0) puts("recv error");
+    if (read_size == 0) {
+        int flag = 1; 
+        setsockopt(fd, IPPROTO_TCP, TCP_NODELAY, (char *)&flag, sizeof(int));
+    }else if (read_size < 0) puts("recv error");
 
     printf("client[%d] disconnected.\n", fd);
 
-    close(fd);
+    close(fd); // send fin to client
     free(pfd);
     return 0;
 }
-
-
 
 int main(int argc, char* argv[])
 {
@@ -66,7 +68,7 @@ int main(int argc, char* argv[])
     // accept
     int conn_fd, client_len;
     client_len = sizeof(struct sockaddr_in);
-    while( (conn_fd = accept(fd, (struct sockaddr*)&client, (socklen_t*)&client_len)) > 0) {
+    while((conn_fd = accept(fd, (struct sockaddr*)&client, (socklen_t*)&client_len)) > 0) {
         pthread_t thread;
         new_sock = malloc(1);
         *new_sock = conn_fd;
@@ -75,6 +77,7 @@ int main(int argc, char* argv[])
             perror("pthread_create.");
             continue;
         }
+        pthread_detach(thread);
     }
 
     if (conn_fd < 0){
@@ -82,5 +85,6 @@ int main(int argc, char* argv[])
         return 1;
     }
 
+    close(fd);
     return 0;
 }

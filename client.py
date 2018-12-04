@@ -8,6 +8,6 @@ host = socket.gethostname()
 port = 8888
 
 s.connect((host, port))
-print s.recv(1024)
 s.send("I'am python simple client. hello server");
+print s.recv(1024)
 s.close()

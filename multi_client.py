@@ -22,6 +22,10 @@ class client(object):
     def SendMsg(self):
         self.socket.send("hello i am No" + self.name);
 
+    def DisConnected(self):
+        self.socket.close()
+        #self.socket.shutdown(socket.SHUT_RDWR)
+
 def Send(self):
     while(1):
         time.sleep(1)
@@ -29,19 +33,43 @@ def Send(self):
         start = time.time()
         self.RecvMsg()
         end = time.time()
-        delat =  end -start
+        delay =  end - start
 
-        if delat > 0.01 :
-            print delat
+        #if delay > 0.01 :
+        #    print delay
 
 
-geventList = list()
-for i in range(1000):
-    c = client(str(i))
-    #c.RecvMsg();
+def TestDelay(clientNum):
+    geventList = list()
+    for i in range(clientNum):
+        c = client(str(i))
+        #c.RecvMsg();
 
-    s = spawn(Send, c)
-    geventList.append(s)
+        s = spawn(Send, c)
+        geventList.append(s)
+    joinall(geventList)
 
-joinall(geventList)
+
+def NewClient(id):
+    flg = True
+    #while flg:
+    c = client(str(id))
+    c.SendMsg()
+    c.RecvMsg()
+    c.DisConnected()
+    #time.sleep(5) #time_wait 2mls
+
+def TestReconnect(clientNum):
+    geventList = list()
+    for i in range(clientNum):
+        s = spawn(NewClient, i)
+        geventList.append(s)
+    joinall(geventList)
+    
+
+if __name__ == "__main__":
+    TestDelay(1000);
+    #TestReconnect(300)
+
+
 
