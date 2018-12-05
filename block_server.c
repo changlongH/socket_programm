@@ -66,8 +66,14 @@ int StartBlockSocket()
     memset(&buff, 0, sizeof(buff));
 
     // recv client msg until close
-    while(read_size = recv(client_sock, buff, 1024, 0) > 0){
+    while((read_size = recv(client_sock, buff, 1024, 0)) > 0){
         printf("recv client msg=%s\n", buff);
+        write(client_sock, buff, read_size);
+        memset(&buff, 0, sizeof(buff));
+    }
+
+    if (read_size < 0){
+        perror("recv error: ");
     }
 
     printf("client disconnect...\n");

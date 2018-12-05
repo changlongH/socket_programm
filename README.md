@@ -6,6 +6,9 @@
 测试的时候使用`ss  nc netstat`相关工具查看tcp状态需要关注
 `TIME_WAIT CLOSE_WAIT FINIST_WAIT_2 `等状态是否正常
 
+本次讨论的都是同步IO(epoll or select 多路复用也属于同步IO)
+non-block IO 不讨论
+
 ## TCP 连接建立与销毁 ##
 - 3次握手建立连接
 ```
