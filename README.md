@@ -11,6 +11,8 @@ non-block IO 不讨论
 
 ## TCP 连接建立与销毁 ##
 - 3次握手建立连接
+- 关键字 SYN ACK FIN RST  (URG 紧急 PSH 推送)
+- 报文格式 win=xxx seq=xxx 
 ```
 A                            B
 |----SYN=1/seq=x        ---->|
